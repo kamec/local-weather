@@ -33,4 +33,6 @@ export interface WeatherApiResponse {
   sys: {
     country: string;
   };
+
+  name2: '';
 }

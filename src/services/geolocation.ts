@@ -3,7 +3,7 @@ import type { Coordinates } from '../types/weather';
 export const getUserLocation = (): Promise<Coordinates> => {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
-       reject(new Error('Geolocation is not supported by your browser'));
+      reject(new Error('Geolocation is not supported by your browser'));
       return;
     }
 
@@ -14,7 +14,7 @@ export const getUserLocation = (): Promise<Coordinates> => {
           lon: position.coords.longitude,
         });
       },
-       (error) => {
+      (error) => {
         switch (error.code) {
           case error.PERMISSION_DENIED:
             reject(new Error('User denied the request for Geolocation'));
@@ -31,7 +31,7 @@ export const getUserLocation = (): Promise<Coordinates> => {
       }, {
         timeout: 10000,
         enableHighAccuracy: true,
-      }
+      },
     );
   });
 };

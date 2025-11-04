@@ -3,15 +3,14 @@ import { WeatherCard } from './components/WeatherCard';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { ErrorMessage } from './components/ErrorMessage';
 
-
 function App() {
-  const { weather, loading, error, refetch } = useWeather();
+  const { weather, loading, error, refetch, searchCity } = useWeather();
 
-  if (loading) {
+  if (loading && !weather) {
     return <LoadingSpinner />;
   }
 
-  if (error) {
+  if (error && !weather) {
     return <ErrorMessage error={error} onRetry={refetch} />;
   }
 
@@ -19,7 +18,14 @@ function App() {
     return <ErrorMessage error="No weather data available" onRetry={refetch} />;
   }
 
-  return <WeatherCard weather={weather} onRefresh={refetch} />;
+  return (
+    <WeatherCard
+      weather={weather}
+      onRefresh={refetch}
+      onSearch={searchCity}
+      isLoading={loading}
+    />
+  );
 }
 
-export default App
+export default App;
