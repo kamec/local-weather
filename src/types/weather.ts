@@ -36,3 +36,31 @@ export interface WeatherApiResponse {
 
   name2: '';
 }
+
+export type TemperatureUnit = 'celsius' | 'fahrenheit';
+
+export interface ForecastItem {
+  dt: number;
+  main: {
+    temp: number;
+    temp_min: number;
+    temp_max: number;
+    humidity: number;
+  };
+  weather: Array<{
+    description: string;
+    icon: string;
+  }>;
+}
+
+export interface ForecastApiResponse {
+  list: ForecastItem[];
+}
+
+export interface ForecastDay {
+  date: string;
+  tempMin: number;
+  tempMax: number;
+  icon: string;
+  description: string;
+}

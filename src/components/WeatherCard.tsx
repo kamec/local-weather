@@ -1,21 +1,44 @@
-import type { Weather } from '../types/weather';
+import type { Weather, ForecastDay } from '../types/weather';
+import type { TemperatureUnit } from '../types/weather';
 import { SearchBar } from './SearchBar';
+import { TemperatureToggle } from './TemperatureToggle';
+import { ForecastList } from './ForecastList';
+import { convertTemperature, getTemperatureSymbol } from '../utils/temperature';
 
 interface WeatherCardProps {
   weather: Weather;
+  forecast: ForecastDay[];
   onRefresh: () => void;
   onSearch: (city: string) => void;
   isLoading?: boolean;
+  temperatureUnit: TemperatureUnit;
+  onToggleUnit: () => void;
 }
 
-export const WeatherCard = ({ weather, onRefresh, onSearch, isLoading }: WeatherCardProps) => {
+export const WeatherCard = ({
+  weather, forecast,
+  onRefresh,
+  onSearch,
+  isLoading,
+  temperatureUnit,
+  onToggleUnit,
+}: WeatherCardProps) => {
   const iconUrl = `https://openweathermap.org/img/wn/${weather.icon}@4x.png`;
+  const tempSymbol = getTemperatureSymbol(temperatureUnit);
+
+  const displayTemp = convertTemperature(weather.temp, temperatureUnit);
+  const displayFeelsLike = convertTemperature(weather.feels_like, temperatureUnit);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full">
         {/* Search Bar */}
         <SearchBar onSearch={onSearch} disabled={isLoading} />
+
+        {/* Temperature Toggle */}
+        <div className="flex justify-center mb-4">
+          <TemperatureToggle unit={temperatureUnit} onToggle={onToggleUnit} />
+        </div>
 
         {/* Location */}
         <div className="text-center mb-6">
@@ -34,8 +57,8 @@ export const WeatherCard = ({ weather, onRefresh, onSearch, isLoading }: Weather
             className="w-32 h-32"
           />
           <div className="text-6xl font-bold text-gray-800">
-            {weather.temp}
-            °C
+            {displayTemp}
+            {tempSymbol}
           </div>
         </div>
 
@@ -47,8 +70,8 @@ export const WeatherCard = ({ weather, onRefresh, onSearch, isLoading }: Weather
           <p className="text-sm text-gray-500 mt-1">
             Feels like
             {' '}
-            {weather.feels_like}
-            °C
+            {displayFeelsLike}
+            {tempSymbol}
           </p>
         </div>
 
@@ -83,11 +106,14 @@ export const WeatherCard = ({ weather, onRefresh, onSearch, isLoading }: Weather
           <div className="bg-blue-50 rounded-xl p-4">
             <p className="text-sm text-gray-500">Feels Like</p>
             <p className="text-2xl font-semibold text-gray-800">
-              {weather.feels_like}
-              °C
+              {displayFeelsLike}
+              {tempSymbol}
             </p>
           </div>
         </div>
+
+        {/* 5-Day Forecast */}
+        <ForecastList forecast={forecast} temperatureUnit={temperatureUnit} />
 
         {/* Refresh Button */}
         <button

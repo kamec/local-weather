@@ -1,10 +1,16 @@
 import { useState, useEffect } from 'react';
-import type { Weather } from '../types/weather';
+import type { Weather, ForecastDay } from '../types/weather';
 import { getUserLocation } from '../services/geolocation';
-import { getWeatherByCoordinates, getWeatherByCity } from '../services/weatherApi';
+import {
+  getWeatherByCoordinates,
+  getWeatherByCity,
+  getForecastByCoordinates,
+  getForecastByCity,
+} from '../services/weatherApi';
 
 export const useWeather = () => {
   const [weather, setWeather] = useState<Weather | null>(null);
+  const [forecast, setForecast] = useState<ForecastDay[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -14,9 +20,14 @@ export const useWeather = () => {
       setError(null);
 
       const coords = await getUserLocation();
-      const weatherData = await getWeatherByCoordinates(coords);
+
+      const [weatherData, forecastData] = await Promise.all([
+        getWeatherByCoordinates(coords),
+        getForecastByCoordinates(coords),
+      ]);
 
       setWeather(weatherData);
+      setForecast(forecastData);
     }
     catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
@@ -30,8 +41,13 @@ export const useWeather = () => {
       setLoading(true);
       setError(null);
 
-      const weatherData = await getWeatherByCity(city);
+      const [weatherData, forecastData] = await Promise.all([
+        getWeatherByCity(city),
+        getForecastByCity(city),
+      ]);
+
       setWeather(weatherData);
+      setForecast(forecastData);
     }
     catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
@@ -47,6 +63,7 @@ export const useWeather = () => {
 
   return {
     weather,
+    forecast,
     loading,
     error,
     refetch: fetchWeatherByLocation,
